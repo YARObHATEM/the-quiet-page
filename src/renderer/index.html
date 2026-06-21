@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="sand" data-font="cormorant" data-size="medium" data-leading="normal" data-width="medium">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; media-src 'self' data: blob:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none';">
+  <title>The Quiet Page</title>
+  <link rel="stylesheet" href="css/fonts.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+  <!-- =========================================================
+       APP SHELL — sidebar + content
+       ========================================================= -->
+  <div class="app-shell">
+
+    <!-- Sidebar (collapsed to icon strip in focus mode) -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <span class="brand-mark">QP</span>
+        <span class="brand-name">The Quiet Page<em>.</em></span>
+      </div>
+
+      <nav class="nav-list">
+        <button class="nav-item" data-tab="write" title="Write — today's page (Ctrl+1)">
+          <svg viewBox="0 0 16 16"><path d="M11 1L15 5L5 15L1 15L1 11Z" stroke-linejoin="round" stroke-linecap="round"/></svg>
+          <span class="nav-label">Write</span>
+        </button>
+        <button class="nav-item" data-tab="library" title="Library — old typings & memories (Ctrl+2)">
+          <svg viewBox="0 0 16 16"><path d="M3 2h4v12H3zM9 2h4v12H9z" stroke-linejoin="round"/><path d="M2 14h12"/></svg>
+          <span class="nav-label">Library</span>
+        </button>
+        <button class="nav-item" data-tab="focus" title="Focus — full-screen typing (Ctrl+3)">
+          <svg viewBox="0 0 16 16"><path d="M1 8h4M11 8h4M8 1v4M8 11v4" stroke-linecap="round"/><circle cx="8" cy="8" r="2.5"/></svg>
+          <span class="nav-label">Focus</span>
+        </button>
+        <button class="nav-item" data-tab="insights" title="Insights — your writing over time (Ctrl+4)">
+          <svg viewBox="0 0 16 16"><path d="M2 13V3M2 13h12" stroke-linecap="round"/><path d="M5 10l3-3 2 2 3-4" stroke-linejoin="round" stroke-linecap="round"/></svg>
+          <span class="nav-label">Insights</span>
+        </button>
+        <button class="nav-item" data-tab="settings" title="Settings (Ctrl+5)">
+          <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="2.2"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4" stroke-linecap="round"/></svg>
+          <span class="nav-label">Settings</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="quick-theme" id="quickTheme" title="Cycle theme (Ctrl+T)">
+          <span class="qt-half qt-half-1"></span>
+          <span class="qt-half qt-half-2"></span>
+        </button>
+        <span class="footer-year" id="footerYear">MMXXV</span>
+      </div>
+    </aside>
+
+    <!-- Main content area -->
+    <main class="content" id="content">
+
+      <!-- ============== WRITE TAB ============== -->
+      <section class="tab-panel" data-tab="write">
+        <header class="site-header">
+          <span class="eyebrow">A Writing Journal</span>
+        </header>
+
+        <div class="composer">
+          <div class="composer-header">
+            <span class="composer-eyebrow">Today's Page</span>
+            <span class="composer-date" id="todayDate">—</span>
+          </div>
+          <div class="composer-field">
+            <div class="writing-indicator" id="writingIndicator"></div>
+            <textarea id="composer" dir="auto" placeholder="Write here. The page is patient. · اكتب هنا" autofocus></textarea>
+          </div>
+          <div class="composer-footer">
+            <div class="composer-meta">
+              <span class="meta-item"><span class="meta-label">Words</span><span class="meta-value" id="wordCount">0</span></span>
+              <span class="meta-item"><span class="meta-label">Chars</span><span class="meta-value" id="charCount">0</span></span>
+              <span class="dir-badge" id="dirBadge" style="display:none">EN</span>
+              <span class="saved-badge" id="savedBadge">Draft saved</span>
+            </div>
+            <button class="publish-btn" id="publishBtn" disabled>Publish</button>
+          </div>
+        </div>
+
+        <section class="stats-bar">
+          <div class="stat">
+            <span class="stat-value" id="statEntries">0</span>
+            <span class="stat-label">Entries</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value" id="statWords">0</span>
+            <span class="stat-label">Total Words</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value" id="statStreak">0</span>
+            <span class="stat-label">Day Streak</span>
+          </div>
+        </section>
+
+        <div class="write-hint">
+          <span>Press <kbd>Ctrl</kbd>+<kbd>Enter</kbd> to publish · <kbd>Enter</kbd> for a new line · Open the <strong>Library</strong> tab to browse past writings</span>
+        </div>
+      </section>
+
+      <!-- ============== LIBRARY TAB ============== -->
+      <section class="tab-panel" data-tab="library">
+        <header class="site-header">
+          <span class="eyebrow">Your Memories</span>
+        </header>
+
+        <div class="library-layout">
+          <aside class="library-sidebar">
+            <div class="library-search-wrap">
+              <svg class="search-icon" viewBox="0 0 16 16"><circle cx="7" cy="7" r="5"/><path d="M11 11l4 4" stroke-linecap="round"/></svg>
+              <input type="text" class="library-search" id="librarySearch" placeholder="Search memories…">
+            </div>
+            <div class="library-filters">
+              <button class="lib-filter is-active" data-filter="all">All</button>
+              <button class="lib-filter" data-filter="en">English</button>
+              <button class="lib-filter" data-filter="ar">Arabic</button>
+              <button class="lib-filter" data-filter="pinned">Pinned</button>
+            </div>
+            <div class="library-list" id="libraryList">
+              <!-- entry cards populated by JS -->
+            </div>
+          </aside>
+          <div class="library-reader" id="libraryReader">
+            <div class="reader-empty" id="readerEmpty">
+              <div class="reader-empty-icon">
+                <svg viewBox="0 0 32 32" width="48" height="48"><path d="M4 6h10v20H4zM18 6h10v20H18z" stroke-linejoin="round" fill="none" stroke-width="1"/></svg>
+              </div>
+              <h3 class="reader-empty-title">Pick a memory</h3>
+              <p class="reader-empty-body">Select an entry on the left to read it here in full, beautifully rendered.</p>
+            </div>
+            <article class="reader-content" id="readerContent" hidden>
+              <div class="reader-meta">
+                <span class="reader-date" id="readerDate"></span>
+                <div class="reader-side">
+                  <span class="reader-lang" id="readerLang"></span>
+                  <span class="reader-words" id="readerWords"></span>
+                </div>
+              </div>
+              <div class="reader-body" id="readerBody"></div>
+              <div class="reader-editor" id="readerEditor" hidden>
+                <textarea class="reader-editor-textarea" id="readerEditorTextarea" dir="auto"></textarea>
+                <div class="reader-editor-actions">
+                  <span class="reader-editor-hint">Ctrl+Enter to save · Esc to cancel</span>
+                  <button class="reader-btn" id="readerEditCancel">Cancel</button>
+                  <button class="reader-btn is-primary" id="readerEditSave">Save</button>
+                </div>
+              </div>
+              <div class="reader-actions" id="readerActions">
+                <button class="reader-btn" id="readerEdit">Edit</button>
+                <button class="reader-btn" id="readerPin">Pin</button>
+                <button class="reader-btn" id="readerCopy">Copy</button>
+                <button class="reader-btn" id="readerExport">Export as .txt</button>
+                <button class="reader-btn is-danger" id="readerRemove">Remove</button>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== FOCUS TAB ============== -->
+      <section class="tab-panel" data-tab="focus">
+        <div class="focus-stage">
+          <div class="focus-meta">
+            <span class="focus-eyebrow" id="focusDate">—</span>
+            <span class="focus-counter" id="focusCounter">0 words · 0 chars</span>
+          </div>
+          <textarea class="focus-textarea" id="focusTextarea" dir="auto" placeholder="Disappear into the page. No menus. No noise. Just you and the next sentence."></textarea>
+          <div class="focus-exit-hint">
+            <kbd>Esc</kbd> to leave · <kbd>Ctrl</kbd>+<kbd>Enter</kbd> to publish
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== INSIGHTS TAB ============== -->
+      <section class="tab-panel" data-tab="insights">
+        <header class="site-header">
+          <span class="eyebrow">Your Writing Over Time</span>
+        </header>
+
+        <div class="insights-grid">
+          <div class="insight-card insight-card-wide">
+            <div class="insight-card-label">This Month</div>
+            <div class="insight-card-value" id="insMonthWords">0</div>
+            <div class="insight-card-sub">words written</div>
+          </div>
+          <div class="insight-card">
+            <div class="insight-card-label">All Time</div>
+            <div class="insight-card-value" id="insTotalWords">0</div>
+            <div class="insight-card-sub">words</div>
+          </div>
+          <div class="insight-card">
+            <div class="insight-card-label">Entries</div>
+            <div class="insight-card-value" id="insTotalEntries">0</div>
+            <div class="insight-card-sub">written</div>
+          </div>
+          <div class="insight-card">
+            <div class="insight-card-label">Day Streak</div>
+            <div class="insight-card-value" id="insStreak">0</div>
+            <div class="insight-card-sub">consecutive days</div>
+          </div>
+          <div class="insight-card">
+            <div class="insight-card-label">Longest Streak</div>
+            <div class="insight-card-value" id="insLongest">0</div>
+            <div class="insight-card-sub">days</div>
+          </div>
+          <div class="insight-card">
+            <div class="insight-card-label">Avg per Entry</div>
+            <div class="insight-card-value" id="insAvgWords">0</div>
+            <div class="insight-card-sub">words</div>
+          </div>
+
+          <div class="insight-card insight-card-wide">
+            <div class="insight-card-label">Last 30 Days</div>
+            <div class="insight-chart" id="insChart"></div>
+          </div>
+
+          <div class="insight-card insight-card-wide">
+            <div class="insight-card-label">By Day of Week</div>
+            <div class="insight-chart insight-chart-7" id="insDowChart"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== SETTINGS TAB ============== -->
+      <section class="tab-panel" data-tab="settings">
+        <header class="site-header">
+          <span class="eyebrow">Tune the Page</span>
+        </header>
+
+        <div class="settings-wrap">
+
+          <div class="settings-section">
+            <div class="settings-section-title">Theme</div>
+            <div class="theme-grid" id="themeGrid">
+              <div class="theme-swatch" data-theme-val="sand" style="background:#EAE4D9;color:#2C2520"><span class="theme-swatch-name">Sand</span></div>
+              <div class="theme-swatch" data-theme-val="ivory" style="background:#F5F3EE;color:#1F2024"><span class="theme-swatch-name">Ivory</span></div>
+              <div class="theme-swatch" data-theme-val="parchment" style="background:#E8DFC9;color:#3A2E1F"><span class="theme-swatch-name">Parchment</span></div>
+              <div class="theme-swatch" data-theme-val="slate" style="background:#1E2329;color:#DDE2E8"><span class="theme-swatch-name">Slate</span></div>
+              <div class="theme-swatch" data-theme-val="midnight" style="background:#141218;color:#E8E0D8"><span class="theme-swatch-name">Midnight</span></div>
+              <div class="theme-swatch" data-theme-val="forest" style="background:#182018;color:#D8DECE"><span class="theme-swatch-name">Forest</span></div>
+            </div>
+          </div>
+
+          <div class="settings-section">
+            <div class="settings-section-title">Typography</div>
+            <div class="setting-row">
+              <span class="setting-label">Font</span>
+              <div class="segmented" data-setting="font">
+                <button data-val="cormorant" class="is-active">Cormorant</button>
+                <button data-val="newsreader">Newsreader</button>
+                <button data-val="spectral">Spectral</button>
+                <button data-val="system">System</button>
+              </div>
+            </div>
+            <div class="setting-row">
+              <span class="setting-label">Size</span>
+              <div class="segmented" data-setting="size">
+                <button data-val="small">S</button>
+                <button data-val="medium" class="is-active">M</button>
+                <button data-val="large">L</button>
+                <button data-val="xlarge">XL</button>
+              </div>
+            </div>
+            <div class="setting-row">
+              <span class="setting-label">Line height</span>
+              <div class="segmented" data-setting="leading">
+                <button data-val="compact">Compact</button>
+                <button data-val="normal" class="is-active">Normal</button>
+                <button data-val="relaxed">Relaxed</button>
+              </div>
+            </div>
+            <div class="setting-row">
+              <span class="setting-label">Text width</span>
+              <div class="segmented" data-setting="width">
+                <button data-val="narrow">Narrow</button>
+                <button data-val="medium" class="is-active">Medium</button>
+                <button data-val="wide">Wide</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-section">
+            <div class="settings-section-title">Sound</div>
+            <div class="setting-row">
+              <span class="setting-label">Key sounds<small>Typewriter feedback on each keystroke</small></span>
+              <div class="toggle is-on" data-toggle="soundEnabled" role="switch" aria-label="Key sounds"></div>
+            </div>
+            <div class="setting-row">
+              <span class="setting-label">Sound type</span>
+              <div class="segmented" data-setting="soundType">
+                <button data-val="typewriter" class="is-active">Typewriter</button>
+                <button data-val="mechanical">Mechanical</button>
+                <button data-val="soft">Soft</button>
+              </div>
+            </div>
+            <div class="setting-row">
+              <span class="setting-label">Volume</span>
+              <div class="range-row">
+                <input type="range" class="range" id="volumeRange" min="0" max="100" value="40">
+                <span class="range-value" id="volumeValue">40</span>
+              </div>
+            </div>
+            <div class="setting-row">
+              <span class="setting-label">Bell on publish<small>Classic typewriter bell</small></span>
+              <div class="toggle is-on" data-toggle="bellOnPublish" role="switch" aria-label="Bell on publish"></div>
+            </div>
+            <button class="test-sound-btn" id="testSoundBtn">Test Sound</button>
+          </div>
+
+          <div class="settings-section">
+            <div class="settings-section-title">Writing</div>
+            <div class="setting-row">
+              <span class="setting-label">Enter to publish<small>Off (default): use Ctrl/Cmd + Enter to publish, Enter for new line</small></span>
+              <div class="toggle" data-toggle="enterToPublish" role="switch" aria-label="Enter to publish"></div>
+            </div>
+            <div class="setting-row">
+              <span class="setting-label">Auto-save draft<small>Restore unfinished text on next launch</small></span>
+              <div class="toggle is-on" data-toggle="autoSaveDraft" role="switch" aria-label="Auto-save draft"></div>
+            </div>
+            <div class="setting-row">
+              <span class="setting-label">Show word count</span>
+              <div class="toggle is-on" data-toggle="showWordCount" role="switch" aria-label="Show word count"></div>
+            </div>
+            <div class="setting-row">
+              <span class="setting-label">Confirm before delete</span>
+              <div class="toggle" data-toggle="confirmDelete" role="switch" aria-label="Confirm before delete"></div>
+            </div>
+          </div>
+
+          <div class="settings-section">
+            <div class="settings-section-title">Data</div>
+            <button class="settings-btn" id="exportJsonBtn">Export All as JSON</button>
+            <button class="settings-btn" id="exportTxtBtn">Export All as Text</button>
+            <button class="settings-btn" id="importBtn">Import JSON</button>
+            <button class="settings-btn" id="openDataBtn">Open Data Folder</button>
+            <button class="settings-btn is-danger" id="clearAllBtn">Clear All Entries</button>
+          </div>
+
+          <div class="settings-section">
+            <div class="settings-section-title">Shortcuts</div>
+            <div class="shortcut-list">
+              <div class="shortcut-item"><span>Publish entry</span><kbd id="shortcutPublish">Ctrl + Enter</kbd></div>
+              <div class="shortcut-item"><span>New line</span><kbd>Enter</kbd></div>
+              <div class="shortcut-item"><span>Write tab</span><kbd>Ctrl + 1</kbd></div>
+              <div class="shortcut-item"><span>Library tab</span><kbd>Ctrl + 2</kbd></div>
+              <div class="shortcut-item"><span>Focus mode</span><kbd>Ctrl + 3</kbd></div>
+              <div class="shortcut-item"><span>Insights tab</span><kbd>Ctrl + 4</kbd></div>
+              <div class="shortcut-item"><span>Settings tab</span><kbd>Ctrl + 5</kbd></div>
+              <div class="shortcut-item"><span>Toggle theme</span><kbd>Ctrl + T</kbd></div>
+              <div class="shortcut-item"><span>Focus the page</span><kbd>Ctrl + L</kbd></div>
+              <div class="shortcut-item"><span>Search entries</span><kbd>Ctrl + K</kbd></div>
+              <div class="shortcut-item"><span>Full screen</span><kbd>F11</kbd></div>
+            </div>
+          </div>
+
+          <div class="settings-section">
+            <div class="settings-section-title">About</div>
+            <p class="about-text">
+              The Quiet Page is a private writing journal. Everything you write is stored only on this device, in your own user data folder — no accounts, no servers, no ads. Arabic flows right-to-left; English flows left-to-right — each line knows its own direction. Version <span id="aboutVersion">—</span>.
+            </p>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Toast notifications -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Scripts -->
+  <script src="js/storage.js"></script>
+  <script src="js/sound.js"></script>
+  <script src="js/util.js"></script>
+  <script src="js/composer.js"></script>
+  <script src="js/entries.js"></script>
+  <script src="js/library.js"></script>
+  <script src="js/focus.js"></script>
+  <script src="js/insights.js"></script>
+  <script src="js/settings.js"></script>
+  <script src="js/tabs.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
