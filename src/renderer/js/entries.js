@@ -12,6 +12,7 @@ window.QuietPageEntries = (function () {
   var filterEl = null;
   var currentSearch = '';
   var currentFilter = 'all';
+  var pendingDeleteId = null;
 
   function init() {
     listEl = document.getElementById('entriesList');
@@ -43,6 +44,12 @@ window.QuietPageEntries = (function () {
         render();
       });
     }
+    document.addEventListener('click', function (e) {
+      if (pendingDeleteId && !e.target.closest('.entry.is-confirming-delete')) {
+        pendingDeleteId = null;
+        render();
+      }
+    });
   }
 
   function getFiltered() {
@@ -57,27 +64,41 @@ window.QuietPageEntries = (function () {
     if (currentSearch) {
       var q = currentSearch.toLowerCase();
       entries = entries.filter(function (e) {
-        return e.text.toLowerCase().indexOf(q) !== -1;
+        var tags = QuietPageStorage.normalizeTags(e.tags).join(' ');
+        var folder = QuietPageStorage.normalizeFolder(e.folder);
+        return (e.title || '').toLowerCase().indexOf(q) !== -1 ||
+               (e.text || '').toLowerCase().indexOf(q) !== -1 ||
+               tags.toLowerCase().indexOf(q) !== -1 ||
+               folder.toLowerCase().indexOf(q) !== -1;
       });
     }
     entries.sort(function (a, b) {
       if (a.pinned && !b.pinned) return -1;
       if (!a.pinned && b.pinned) return 1;
-      return new Date(b.createdAt) - new Date(a.createdAt);
+      return entryTime(b) - entryTime(a);
     });
     return entries;
   }
 
+  function entryTime(entry) {
+    var time = Date.parse(entry.updatedAt || entry.createdAt);
+    return Number.isFinite(time) ? time : 0;
+  }
+
   function render() {
+    updateStats();
     if (!listEl) return;
     var entries = getFiltered();
-    updateStats();
 
     if (entries.length === 0) {
       if (currentSearch) {
-        listEl.innerHTML = '<div class="empty-state">No entries match your search.<span>Try different words.</span></div>';
+        listEl.innerHTML = '<div class="empty-state">' +
+          QuietPageUtil.emptyStateHtml('search', 'Nothing found. Try different words.') +
+          '</div>';
       } else {
-        listEl.innerHTML = '<div class="empty-state">Nothing written yet.<span>The page awaits.</span></div>';
+        listEl.innerHTML = '<div class="empty-state">' +
+          QuietPageUtil.emptyStateHtml('page', 'Your page is waiting. Start writing.') +
+          '</div>';
       }
       return;
     }
@@ -87,14 +108,24 @@ window.QuietPageEntries = (function () {
       var e = entries[i];
       var dir = QuietPageUtil.detectDirection(e.text);
       var date = QuietPageUtil.formatEntryDate(e.createdAt);
-      var words = QuietPageUtil.countWords(e.text);
+      var words = Number.isFinite(Number(e.wordCount)) ? Number(e.wordCount) : QuietPageUtil.countWords(e.text);
+      if (pendingDeleteId === e.id) {
+        html += '<article class="entry is-confirming-delete" data-id="' + e.id + '">';
+        html += '<div class="entry-delete-title">Delete this entry?</div>';
+        html += '<div class="entry-delete-actions">';
+        html += '<button type="button" data-action="confirm-remove" data-id="' + e.id + '">Delete permanently</button>';
+        html += '<button type="button" data-action="cancel-remove" data-id="' + e.id + '">Cancel</button>';
+        html += '</div>';
+        html += '</article>';
+        continue;
+      }
       html += '<article class="entry' + (e.pinned ? ' is-pinned' : '') + '" data-id="' + e.id + '">';
       html += '<div class="entry-meta">';
       html += '<span class="entry-date"><strong>' + date.month + '</strong> ' + QuietPageUtil.ordinal(date.day) + ', ' + date.year + ' · ' + date.time + '</span>';
       html += '<div class="entry-side">';
       html += '<span class="entry-lang">' + QuietPageUtil.langLabel(dir) + '</span>';
       if (QuietPageStorage.getSettings().showWordCount) {
-        html += '<span class="entry-words">' + words + 'w</span>';
+        html += '<span class="entry-words">' + words + ' words</span>';
       }
       html += '<button class="entry-action' + (e.pinned ? ' is-pinned' : '') + '" data-action="pin" data-id="' + e.id + '" aria-label="' + (e.pinned ? 'Unpin' : 'Pin') + ' entry">';
       html += '<svg viewBox="0 0 12 12"><path d="M3 1l6 6-2.5 .5L5 11l-1-3.5L1.5 7z" stroke-linejoin="round"/></svg>';
@@ -103,7 +134,7 @@ window.QuietPageEntries = (function () {
       html += '<button class="entry-action" data-action="remove" data-id="' + e.id + '" aria-label="Remove entry">Remove</button>';
       html += '</div>';
       html += '</div>';
-      html += '<div class="entry-body" data-action="open" data-id="' + e.id + '">' + QuietPageUtil.renderEntryBody(e.text) + '</div>';
+      html += '<div class="entry-body" data-action="open" data-id="' + e.id + '">' + (e.html ? QuietPageUtil.renderFormattedEntry(e.html, e.text) : QuietPageUtil.renderEntryBody(e.text)) + '</div>';
       html += '</article>';
     }
     listEl.innerHTML = html;
@@ -118,6 +149,8 @@ window.QuietPageEntries = (function () {
           var id = btn.getAttribute('data-id');
           if (action === 'pin') togglePin(id);
           else if (action === 'remove') remove(id);
+          else if (action === 'confirm-remove') confirmRemove(id);
+          else if (action === 'cancel-remove') cancelRemove();
           else if (action === 'open') openInLibrary(id);
         });
       })(buttons[j]);
@@ -133,7 +166,9 @@ window.QuietPageEntries = (function () {
     var entries = QuietPageStorage.getEntries();
     var totalWords = 0;
     for (var i = 0; i < entries.length; i++) {
-      totalWords += QuietPageUtil.countWords(entries[i].text);
+      totalWords += Number.isFinite(Number(entries[i].wordCount))
+        ? Number(entries[i].wordCount)
+        : QuietPageUtil.countWords(entries[i].text || entries[i].content || '');
     }
     var streak = QuietPageUtil.calculateStreak(entries);
 
@@ -159,32 +194,23 @@ window.QuietPageEntries = (function () {
   }
 
   function remove(id) {
+    pendingDeleteId = id;
+    render();
+  }
+
+  function cancelRemove() {
+    pendingDeleteId = null;
+    render();
+  }
+
+  function confirmRemove(id) {
     var entries = QuietPageStorage.getEntries();
-    var entry = null;
-    for (var i = 0; i < entries.length; i++) {
-      if (entries[i].id === id) { entry = entries[i]; break; }
-    }
-    if (!entry) return;
-
-    var doRemove = function () {
-      var filtered = entries.filter(function (e) { return e.id !== id; });
-      QuietPageStorage.setEntries(filtered);
-      document.dispatchEvent(new CustomEvent('quiet:entries-changed', { detail: { action: 'remove', id: id } }));
-      QuietPageUtil.toast('Removed');
-    };
-
-    if (QuietPageStorage.getSettings().confirmDelete) {
-      window.QuietPage.dialog.confirm({
-        title: 'Remove entry?',
-        message: 'This cannot be undone.',
-        okLabel: 'Remove',
-        cancelLabel: 'Cancel',
-      }).then(function (ok) {
-        if (ok) doRemove();
-      });
-    } else {
-      doRemove();
-    }
+    var filtered = entries.filter(function (e) { return e.id !== id; });
+    if (filtered.length === entries.length) return;
+    QuietPageStorage.setEntries(filtered);
+    pendingDeleteId = null;
+    document.dispatchEvent(new CustomEvent('quiet:entries-changed', { detail: { action: 'remove', id: id } }));
+    QuietPageUtil.toast('Removed');
   }
 
   return {

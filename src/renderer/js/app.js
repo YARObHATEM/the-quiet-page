@@ -25,6 +25,7 @@
       window.QuietPageFocus.init();
       window.QuietPageInsights.init();
       window.QuietPageTabs.init();
+      window.QuietPageAmbient.init(settings);
 
       // 4) Set today's date + footer year
       var todayEl = document.getElementById('todayDate');
@@ -35,15 +36,15 @@
       var yearEl = document.getElementById('footerYear');
       if (yearEl) yearEl.textContent = window.QuietPageUtil.toRoman(new Date().getFullYear());
 
-      // 5) Restore last tab
-      var initialTab = settings.activeTab || 'write';
+      // 5) Start on the writing page so the writer can type immediately.
+      var initialTab = 'write';
       window.QuietPageTabs.switchTo(initialTab);
 
       // 6) App version
       var aboutVersion = document.getElementById('aboutVersion');
       if (aboutVersion) {
         window.QuietPage.app.getVersion().then(function (v) {
-          aboutVersion.textContent = v;
+          aboutVersion.textContent = /^v/i.test(v) ? v : 'v' + v;
         });
       }
 
@@ -74,18 +75,13 @@
   function wireMenuEvents() {
     if (!window.QuietPage || !window.QuietPage.menu) return;
     window.QuietPage.menu.on('menu:new-entry', function () {
-      window.QuietPageTabs.switchTo('write');
-      window.QuietPageComposer.clear();
-      window.QuietPageComposer.focus();
+      startNewEntry();
     });
     window.QuietPage.menu.on('menu:publish', function () {
-      if (window.QuietPageTabs.current() === 'focus') {
-        // Trigger focus publish
-        var evt = new KeyboardEvent('keydown', { key: 'Enter', ctrlKey: true, bubbles: true });
-        document.getElementById('focusTextarea') && document.getElementById('focusTextarea').dispatchEvent(evt);
-      } else {
-        window.QuietPageComposer.publish();
-      }
+      publishCurrent();
+    });
+    window.QuietPage.menu.on('menu:save-current', function () {
+      saveCurrent();
     });
     window.QuietPage.menu.on('menu:export-json', function () {
       window.QuietPageTabs.switchTo('settings');
@@ -108,26 +104,69 @@
     window.QuietPage.menu.on('menu:cycle-theme', function () {
       window.QuietPageSettings.cycleTheme();
     });
+    window.QuietPage.menu.on('menu:toggle-focus', function () {
+      window.QuietPageTabs.switchTo(window.QuietPageTabs.current() === 'focus' ? 'write' : 'focus');
+    });
     window.QuietPage.menu.on('menu:focus-composer', function () {
       window.QuietPageTabs.switchTo('write');
       setTimeout(function () { window.QuietPageComposer.focus(); }, 100);
     });
     window.QuietPage.menu.on('menu:search', function () {
-      var tab = window.QuietPageTabs.current();
-      if (tab === 'library') {
-        var s = document.getElementById('librarySearch');
-        if (s) { s.focus(); s.select(); }
-      } else {
-        window.QuietPageTabs.switchTo('write');
-        var w = document.getElementById('searchInput');
-        if (w) { w.focus(); w.select(); }
-      }
+      focusLibrarySearch();
     });
     window.QuietPage.menu.on('menu:about', function () {
       window.QuietPageTabs.switchTo('settings');
-      var about = document.querySelector('.about-text');
+      var about = document.querySelector('.about-section');
       if (about) about.scrollIntoView({ behavior: 'smooth' });
     });
+  }
+
+  function startNewEntry() {
+    if (window.QuietPageTabs.current() === 'focus') {
+      window.QuietPageComposer.setText(window.QuietPageFocus.getText());
+    }
+    window.QuietPageTabs.switchTo('write');
+    if (window.QuietPageComposer.getText().trim()) {
+      window.QuietPageComposer.publish({ silent: true, playBell: false });
+    } else {
+      window.QuietPageComposer.clear();
+    }
+    setTimeout(function () { window.QuietPageComposer.focus(); }, 80);
+  }
+
+  function publishCurrent() {
+    var tab = window.QuietPageTabs.current();
+    if (tab === 'focus') {
+      var evt = new KeyboardEvent('keydown', { key: 'Enter', ctrlKey: true, bubbles: true });
+      document.getElementById('focusTextarea') && document.getElementById('focusTextarea').dispatchEvent(evt);
+    } else if (tab === 'library' && window.QuietPageLibrary && window.QuietPageLibrary.saveCurrentEdit) {
+      window.QuietPageLibrary.saveCurrentEdit();
+    } else {
+      window.QuietPageTabs.switchTo('write');
+      window.QuietPageComposer.publish();
+    }
+  }
+
+  function saveCurrent() {
+    var tab = window.QuietPageTabs.current();
+    if (tab === 'library' && window.QuietPageLibrary && window.QuietPageLibrary.saveCurrentEdit) {
+      window.QuietPageLibrary.saveCurrentEdit();
+      return;
+    }
+    if (tab === 'focus' && window.QuietPageFocus && window.QuietPageFocus.forceSaveDraft) {
+      window.QuietPageFocus.forceSaveDraft().then(function () { QuietPageUtil.toast('Saved'); });
+      return;
+    }
+    window.QuietPageTabs.switchTo('write');
+    window.QuietPageComposer.forceSaveDraft();
+  }
+
+  function focusLibrarySearch() {
+    window.QuietPageTabs.switchTo('library');
+    setTimeout(function () {
+      var s = document.getElementById('librarySearch');
+      if (s) { s.focus(); s.select(); }
+    }, 80);
   }
 
   // Export/Import exposed at module level for menu hooks
@@ -171,6 +210,41 @@
 
   function wireShortcuts() {
     document.addEventListener('keydown', function (e) {
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'n') {
+        e.preventDefault();
+        startNewEntry();
+        return;
+      }
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        saveCurrent();
+        return;
+      }
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'f') {
+        e.preventDefault();
+        window.QuietPageTabs.switchTo(window.QuietPageTabs.current() === 'focus' ? 'write' : 'focus');
+        return;
+      }
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'f') {
+        e.preventDefault();
+        focusLibrarySearch();
+        return;
+      }
+      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'e') {
+        e.preventDefault();
+        exportAllPublic('json');
+        return;
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'l') {
+        e.preventDefault();
+        window.QuietPageTabs.switchTo('library');
+        return;
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        focusLibrarySearch();
+        return;
+      }
       // Ctrl/Cmd + 1..5 → switch tabs
       if ((e.ctrlKey || e.metaKey) && ['1','2','3','4','5'].indexOf(e.key) !== -1) {
         e.preventDefault();
@@ -184,32 +258,15 @@
         window.QuietPageSettings.cycleTheme();
         return;
       }
-      // Ctrl/Cmd + L → focus composer
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'l') {
-        e.preventDefault();
-        window.QuietPageTabs.switchTo('write');
-        setTimeout(function () { window.QuietPageComposer.focus(); }, 100);
-        return;
-      }
-      // Ctrl/Cmd + K → search
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault();
-        var tab = window.QuietPageTabs.current();
-        if (tab === 'library') {
-          var s = document.getElementById('librarySearch');
-          if (s) { s.focus(); s.select(); }
-        } else {
-          window.QuietPageTabs.switchTo('write');
-          var w = document.getElementById('searchInput');
-          if (w) { w.focus(); w.select(); }
-        }
-        return;
-      }
       // Ctrl/Cmd + , → settings
       if ((e.ctrlKey || e.metaKey) && e.key === ',') {
         e.preventDefault();
         window.QuietPageTabs.switchTo('settings');
         return;
+      }
+      if (e.key === 'Escape' && window.QuietPageTabs.current() === 'focus') {
+        e.preventDefault();
+        window.QuietPageTabs.switchTo('write');
       }
     });
   }

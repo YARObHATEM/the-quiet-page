@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="sand" data-font="cormorant" data-size="medium" data-leading="normal" data-width="medium">
+<html lang="en" data-theme="sage" data-font="cormorant" data-english-font="default" data-arabic-font="default" data-size="medium" data-leading="normal" data-width="medium">
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; media-src 'self' data: blob:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none';">
@@ -12,13 +12,14 @@
   <!-- =========================================================
        APP SHELL — sidebar + content
        ========================================================= -->
+  <div class="app-scale-root" id="appScaleRoot">
   <div class="app-shell">
 
     <!-- Sidebar (collapsed to icon strip in focus mode) -->
     <aside class="sidebar" id="sidebar">
       <div class="brand">
         <span class="brand-mark">QP</span>
-        <span class="brand-name">The Quiet Page<em>.</em></span>
+        <span class="brand-name">The Quiet Page</span>
       </div>
 
       <nav class="nav-list">
@@ -44,11 +45,63 @@
         </button>
       </nav>
 
+      <div class="ambient-panel" id="ambientPanel" data-playing="false" data-idle="full">
+        <div class="ambient-controls" role="group" aria-label="Ambient music moods">
+          <button class="ambient-btn" type="button" data-mood="rain" title="Rain" aria-label="Play rain ambience" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a4.6 4.4 0 0 1 0 -9a5 4.5 0 0 1 11 2h1a3.5 3.5 0 0 1 0 7"/><path d="M11 13v2m0 3v2m4 -5v2m0 3v2"/></svg>
+          </button>
+          <button class="ambient-btn" type="button" data-mood="forest" title="Forest" aria-label="Play forest ambience" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 5l3 3l-2 1l4 4l-3 1l4 4h-9"/><path d="M15 21l0 -3"/><path d="M8 13l-2 -2"/><path d="M8 12l2 -2"/><path d="M8 21v-13"/><path d="M5.824 16a3 3 0 0 1 -2.743 -3.69a3 3 0 0 1 .304 -4.833a3 3 0 0 1 4.615 -3.707a3 3 0 0 1 4.614 3.707a3 3 0 0 1 .305 4.833a3 3 0 0 1 -2.919 3.695h-4l-.176 -.005"/></svg>
+          </button>
+          <button class="ambient-btn" type="button" data-mood="cafe" title="Café" aria-label="Play café ambience" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 14c.83 .642 2.077 1.017 3.5 1c1.423 .017 2.67 -.358 3.5 -1c.83 -.642 2.077 -1.017 3.5 -1c1.423 -.017 2.67 .358 3.5 1"/><path d="M8 3a2.4 2.4 0 0 0 -1 2a2.4 2.4 0 0 0 1 2"/><path d="M12 3a2.4 2.4 0 0 0 -1 2a2.4 2.4 0 0 0 1 2"/><path d="M3 10h14v5a6 6 0 0 1 -6 6h-2a6 6 0 0 1 -6 -6v-5"/><path d="M16.746 16.726a3 3 0 1 0 .252 -5.555"/></svg>
+          </button>
+          <button class="ambient-btn" type="button" data-mood="lofi" title="Lo-fi" aria-label="Play lo-fi ambience" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"/><path d="M13 17a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"/><path d="M9 17v-13h10v13"/><path d="M9 8h10"/></svg>
+          </button>
+          <button class="ambient-btn" type="button" data-mood="fireplace" title="Fireplace" aria-label="Play fireplace ambience" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12c2 -2.96 0 -6 -1 -8c0 3.038 -1.773 4.741 -3 6c-1.226 1.26 -2 3.24 -2 5a6 6 0 0 0 12 0c0 -1.532 -1.056 -3.94 -2 -5c-.8 2 -2.2 3 -4 2z"/><path d="M10 17a2 2 0 1 0 4 0c0 -1 -1 -2 -2 -3c0 1.5 -2 2 -2 3z"/></svg>
+          </button>
+          <button class="ambient-btn" type="button" data-mood="ocean" title="Ocean" aria-label="Play ocean ambience" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7c2.667 0 2.667 2 5.333 2s2.667 -2 5.334 -2s2.666 2 5.333 2"/><path d="M3 13c2.667 0 2.667 2 5.333 2s2.667 -2 5.334 -2s2.666 2 5.333 2"/><path d="M3 19c2.667 0 2.667 2 5.333 2s2.667 -2 5.334 -2s2.666 2 5.333 2"/></svg>
+          </button>
+          <button class="ambient-btn" type="button" data-mood="thunder" title="Thunder" aria-label="Play thunder ambience" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18a4.6 4.4 0 0 1 0 -9a5 4.5 0 0 1 11 2h1a3.5 3.5 0 0 1 0 7"/><path d="M13 12l-2 4h4l-2 4"/></svg>
+          </button>
+          <button class="ambient-btn" type="button" data-mood="birds" title="Birds" aria-label="Play birds ambience" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 4c-2.5 .8 -4.5 2.6 -6 5.5c-1.5 2.8 -2.8 5.4 -6 7.5c3.6 -.2 6.8 -1.7 9 -4.5c2.2 -2.8 3 -5.5 3 -8.5z"/><path d="M14 10c-3 -1 -5 -3 -6 -6c-.6 3 .3 6.2 3 8"/><path d="M8 17l-4 3"/></svg>
+          </button>
+          <button class="ambient-btn" type="button" data-mood="river" title="River" aria-label="Play river ambience" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c-3.5 4 -6 7.3 -6 10a6 6 0 0 0 12 0c0 -2.7 -2.5 -6 -6 -10z"/><path d="M8 14c1.4 1 2.7 1.5 4 1.5s2.6 -.5 4 -1.5"/></svg>
+          </button>
+          <button class="ambient-btn" type="button" data-mood="wind" title="Wind" aria-label="Play wind ambience" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h8.5a2.5 2.5 0 1 0 -2.5 -2.5"/><path d="M3 12h15.5a2.5 2.5 0 1 1 -2.5 2.5"/><path d="M5 16h5"/></svg>
+          </button>
+          <button class="ambient-btn" type="button" data-mood="train" title="Train" aria-label="Play train ambience" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-10a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3z"/><path d="M8 4l-1 14"/><path d="M16 4l1 14"/><path d="M6 10h12"/><path d="M8 21l2 -3"/><path d="M16 21l-2 -3"/></svg>
+          </button>
+          <button class="ambient-btn" type="button" data-mood="night" title="Night" aria-label="Play night ambience" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a6.5 6.5 0 0 0 8 8a8.5 8.5 0 1 1 -8 -8z"/></svg>
+          </button>
+          <button class="ambient-btn" type="button" data-mood="white-noise" title="White Noise" aria-label="Play white noise ambience" aria-pressed="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12c2 -6 4 -6 6 0s4 6 6 0s4 -6 6 0"/></svg>
+          </button>
+          <button class="ambient-btn ambient-stop" type="button" id="ambientStop" title="Stop ambient sound" aria-label="Stop ambient sound" disabled>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2l0 -10"/></svg>
+          </button>
+        </div>
+        <div class="ambient-volume" id="ambientVolumeWrap">
+          <input type="range" class="ambient-range" id="ambientVolume" min="0" max="100" value="40" aria-label="Ambient volume">
+        </div>
+      </div>
+
       <div class="sidebar-footer">
-        <button class="quick-theme" id="quickTheme" title="Cycle theme (Ctrl+T)">
-          <span class="qt-half qt-half-1"></span>
-          <span class="qt-half qt-half-2"></span>
-        </button>
+        <div class="footer-controls">
+          <button class="quick-theme" id="quickTheme" title="Cycle theme (Ctrl+T)">
+            <span class="qt-half qt-half-1"></span>
+            <span class="qt-half qt-half-2"></span>
+          </button>
+        </div>
         <span class="footer-year" id="footerYear">MMXXV</span>
       </div>
     </aside>
@@ -67,18 +120,43 @@
             <span class="composer-eyebrow">Today's Page</span>
             <span class="composer-date" id="todayDate">—</span>
           </div>
+          <div class="formatting-toolbar" id="formattingToolbar" role="toolbar" aria-label="Text formatting">
+            <button class="formatting-btn" type="button" data-format="bold" title="Bold (Ctrl+B)" aria-label="Bold">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h6a4 4 0 0 1 0 8h-6z"/><path d="M13 13h1a3 3 0 0 1 0 6h-7v-6"/></svg>
+            </button>
+            <button class="formatting-btn" type="button" data-format="italic" title="Italic (Ctrl+I)" aria-label="Italic">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5h6"/><path d="M7 19h6"/><path d="M14 5l-4 14"/></svg>
+            </button>
+            <button class="formatting-btn" type="button" data-format="underline" title="Underline (Ctrl+U)" aria-label="Underline">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5v5a5 5 0 0 0 10 0v-5"/><path d="M5 19h14"/></svg>
+            </button>
+            <span class="formatting-divider" aria-hidden="true"></span>
+            <button class="formatting-btn" type="button" data-format="heading-1" title="Heading 1" aria-label="Heading 1">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5v14M5 12h8M13 5v14M17 10l2-2v8"/></svg>
+            </button>
+            <button class="formatting-btn" type="button" data-format="heading-2" title="Heading 2" aria-label="Heading 2">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5v14M5 12h8M13 5v14M17 10a2 2 0 1 1 4 0c0 1.5-2 2-4 4h4"/></svg>
+            </button>
+          </div>
           <div class="composer-field">
             <div class="writing-indicator" id="writingIndicator"></div>
-            <textarea id="composer" dir="auto" placeholder="Write here. The page is patient. · اكتب هنا" autofocus></textarea>
+            <div class="composer-editor" id="composer" dir="auto" contenteditable="true" role="textbox" aria-multiline="true" aria-label="Writing page" data-placeholder="Write anything..." data-empty="true" autofocus></div>
           </div>
           <div class="composer-footer">
             <div class="composer-meta">
-              <span class="meta-item"><span class="meta-label">Words</span><span class="meta-value" id="wordCount">0</span></span>
+              <span class="meta-item"><span class="meta-value" id="wordCount">0 words</span></span>
               <span class="meta-item"><span class="meta-label">Chars</span><span class="meta-value" id="charCount">0</span></span>
               <span class="dir-badge" id="dirBadge" style="display:none">EN</span>
-              <span class="saved-badge" id="savedBadge">Draft saved</span>
+              <span class="saved-badge" id="savedBadge">Saved</span>
             </div>
             <button class="publish-btn" id="publishBtn" disabled>Publish</button>
+          </div>
+          <div class="composer-organize">
+            <div class="composer-folder">
+              <label for="composerFolder">Folder</label>
+              <input type="text" id="composerFolder" class="organize-input" placeholder="Uncategorized" maxlength="48" autocomplete="off">
+            </div>
+
           </div>
         </div>
 
@@ -98,7 +176,7 @@
         </section>
 
         <div class="write-hint">
-          <span>Press <kbd>Ctrl</kbd>+<kbd>Enter</kbd> to publish · <kbd>Enter</kbd> for a new line · Open the <strong>Library</strong> tab to browse past writings</span>
+          <span>Press <kbd>Ctrl</kbd>+<kbd>Enter</kbd> to publish · <kbd>Ctrl</kbd>+<kbd>N</kbd> for a new entry · <kbd>Ctrl</kbd>+<kbd>F</kbd> to search the library</span>
         </div>
       </section>
 
@@ -120,6 +198,10 @@
               <button class="lib-filter" data-filter="ar">Arabic</button>
               <button class="lib-filter" data-filter="pinned">Pinned</button>
             </div>
+              <div class="library-organize">
+                <div class="library-organize-title">Folders</div>
+                <div class="folder-filter-list" id="folderFilterList"></div>
+              </div>
             <div class="library-list" id="libraryList">
               <!-- entry cards populated by JS -->
             </div>
@@ -138,6 +220,15 @@
                 <div class="reader-side">
                   <span class="reader-lang" id="readerLang"></span>
                   <span class="reader-words" id="readerWords"></span>
+                </div>
+              </div>
+              <div class="reader-organize" id="readerOrganize">
+                <div class="reader-folder">
+                  <label for="readerFolderInput">Folder</label>
+                  <div class="reader-folder-edit">
+                    <input type="text" id="readerFolderInput" class="organize-input" placeholder="Uncategorized" maxlength="48" autocomplete="off">
+                    <button class="reader-folder-save" id="readerFolderSave" type="button">Save</button>
+                  </div>
                 </div>
               </div>
               <div class="reader-body" id="readerBody"></div>
@@ -164,14 +255,15 @@
       <!-- ============== FOCUS TAB ============== -->
       <section class="tab-panel" data-tab="focus">
         <div class="focus-stage">
+          <button class="focus-back-btn" id="focusBackBtn" type="button" title="Back to writing" aria-label="Back to writing">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="M5 12l6 6"/><path d="M5 12l6 -6"/></svg>
+          </button>
           <div class="focus-meta">
             <span class="focus-eyebrow" id="focusDate">—</span>
             <span class="focus-counter" id="focusCounter">0 words · 0 chars</span>
           </div>
           <textarea class="focus-textarea" id="focusTextarea" dir="auto" placeholder="Disappear into the page. No menus. No noise. Just you and the next sentence."></textarea>
-          <div class="focus-exit-hint">
-            <kbd>Esc</kbd> to leave · <kbd>Ctrl</kbd>+<kbd>Enter</kbd> to publish
-          </div>
+          <div class="focus-exit-hint">Esc to exit</div>
         </div>
       </section>
 
@@ -180,6 +272,10 @@
         <header class="site-header">
           <span class="eyebrow">Your Writing Over Time</span>
         </header>
+
+        <div class="insights-empty" id="insightsEmpty" hidden>
+          Write something first. Come back here after.
+        </div>
 
         <div class="insights-grid">
           <div class="insight-card insight-card-wide">
@@ -234,30 +330,66 @@
         <div class="settings-wrap">
 
           <div class="settings-section">
-            <div class="settings-section-title">Theme</div>
-            <div class="theme-grid" id="themeGrid">
-              <div class="theme-swatch" data-theme-val="sand" style="background:#EAE4D9;color:#2C2520"><span class="theme-swatch-name">Sand</span></div>
-              <div class="theme-swatch" data-theme-val="ivory" style="background:#F5F3EE;color:#1F2024"><span class="theme-swatch-name">Ivory</span></div>
-              <div class="theme-swatch" data-theme-val="parchment" style="background:#E8DFC9;color:#3A2E1F"><span class="theme-swatch-name">Parchment</span></div>
-              <div class="theme-swatch" data-theme-val="slate" style="background:#1E2329;color:#DDE2E8"><span class="theme-swatch-name">Slate</span></div>
-              <div class="theme-swatch" data-theme-val="midnight" style="background:#141218;color:#E8E0D8"><span class="theme-swatch-name">Midnight</span></div>
-              <div class="theme-swatch" data-theme-val="forest" style="background:#182018;color:#D8DECE"><span class="theme-swatch-name">Forest</span></div>
+            <div class="settings-section-title">Interface</div>
+            <div class="setting-row ui-scale-row">
+              <span class="setting-label">Interface size<small>Adjust menus, buttons, panels, and settings</small></span>
+              <div class="range-row ui-scale-control">
+                <input type="range" class="range" id="uiScaleRange" min="0" max="4" step="1" value="2" aria-label="Interface size">
+                <span class="range-value" id="uiScaleValue">100%</span>
+                <button class="scale-apply-btn" id="uiScaleApply" type="button">Apply</button>
+              </div>
             </div>
           </div>
 
           <div class="settings-section">
-            <div class="settings-section-title">Typography</div>
+            <div class="settings-section-title">Appearance</div>
+            <div class="theme-grid" id="themeGrid">
+              <div class="theme-swatch" data-theme-val="sage" style="background:#172019;color:#dbe6d7"><span class="theme-swatch-name">Sage</span></div>
+              <div class="theme-swatch" data-theme-val="old-paper" style="background-color:#f5e6c8;background-image:radial-gradient(ellipse at 20% 50%,rgba(180,130,70,.15),transparent 60%);color:#2c1a0e"><span class="theme-swatch-name">Old Paper</span></div>
+              <div class="theme-swatch" data-theme-val="typewriter" style="background:radial-gradient(ellipse at center,#fafaf8 60%,#e6e2d8 100%);color:#1a1a1a"><span class="theme-swatch-name">Typewriter</span></div>
+              <div class="theme-swatch" data-theme-val="candlelight" style="background:radial-gradient(ellipse at 50% 40%,#3b2910 0%,#1a1208 70%);color:#f5e6b2"><span class="theme-swatch-name">Candlelight</span></div>
+              <div class="theme-swatch" data-theme-val="moonlight" style="background:radial-gradient(ellipse at 50% 20%,#1b2940 0%,#0d1117 70%);color:#e8edf5"><span class="theme-swatch-name">Moonlight</span></div>
+              <div class="theme-swatch" data-theme-val="dusk" style="background:linear-gradient(180deg,#32264b 0%,#1e1a2e 65%);color:#e8e4f0"><span class="theme-swatch-name">Dusk</span></div>
+              <div class="theme-swatch" data-theme-val="slate" style="background:#1E2329;color:#DDE2E8"><span class="theme-swatch-name">Slate</span></div>
+              <div class="theme-swatch" data-theme-val="midnight" style="background:#141218;color:#E8E0D8"><span class="theme-swatch-name">Midnight</span></div>
+              <div class="theme-swatch" data-theme-val="forest" style="background:#182018;color:#D8DECE"><span class="theme-swatch-name">Forest</span></div>
+              <div class="theme-swatch" data-theme-val="ember" style="background:#1A0F08;color:#E8A85C"><span class="theme-swatch-name">Ember</span></div>
+              <div class="theme-swatch" data-theme-val="rose" style="background:#D4C2C0;color:#3A2828"><span class="theme-swatch-name">Rose</span></div>
+              <div class="theme-swatch" data-theme-val="obsidian" style="background:#000000;color:#FFFFFF"><span class="theme-swatch-name">Obsidian</span></div>
+              <div class="theme-swatch" data-theme-val="steel" style="background:#3A444E;color:#D8DCE0"><span class="theme-swatch-name">Steel</span></div>
+              <div class="theme-swatch" data-theme-val="aurora" style="background:#0A0E1F;color:#C8D8E8"><span class="theme-swatch-name">Aurora</span></div>
+              <div class="theme-swatch" data-theme-val="cave" style="background:#1C1410;color:#C8B898"><span class="theme-swatch-name">Cave</span></div>
+              <div class="theme-swatch" data-theme-val="noir" style="background:#1A1A18;color:#D8C8A0"><span class="theme-swatch-name">Noir</span></div>
+            </div>
+          </div>
+
+          <div class="settings-section">
+            <div class="settings-section-title">Writing</div>
             <div class="setting-row">
-              <span class="setting-label">Font</span>
-              <div class="segmented" data-setting="font">
-                <button data-val="cormorant" class="is-active">Cormorant</button>
-                <button data-val="newsreader">Newsreader</button>
-                <button data-val="spectral">Spectral</button>
-                <button data-val="system">System</button>
-              </div>
+              <span class="setting-label">English font<small>Applies to English writing and interface labels</small></span>
+              <select class="font-select" data-setting="englishFont" aria-label="English font">
+                <option value="default">Default · Cormorant</option>
+                <option value="newsreader">Newsreader</option>
+                <option value="spectral">Spectral</option>
+                <option value="lora">Lora</option>
+                <option value="merriweather">Merriweather</option>
+                <option value="jetbrains-mono">JetBrains Mono</option>
+                <option value="nunito">Nunito</option>
+                <option value="playfair-display">Playfair Display</option>
+              </select>
             </div>
             <div class="setting-row">
-              <span class="setting-label">Size</span>
+              <span class="setting-label">Arabic font<small>Applies automatically to right-to-left writing</small></span>
+              <select class="font-select" data-setting="arabicFont" aria-label="Arabic font">
+                <option value="default">Default · Amiri</option>
+                <option value="tajawal">Tajawal</option>
+                <option value="lateef">Lateef</option>
+                <option value="cairo">Cairo</option>
+                <option value="scheherazade-new">Scheherazade New</option>
+              </select>
+            </div>
+            <div class="setting-row">
+              <span class="setting-label">Text size</span>
               <div class="segmented" data-setting="size">
                 <button data-val="small">S</button>
                 <button data-val="medium" class="is-active">M</button>
@@ -266,7 +398,7 @@
               </div>
             </div>
             <div class="setting-row">
-              <span class="setting-label">Line height</span>
+              <span class="setting-label">Line spacing</span>
               <div class="segmented" data-setting="leading">
                 <button data-val="compact">Compact</button>
                 <button data-val="normal" class="is-active">Normal</button>
@@ -274,12 +406,16 @@
               </div>
             </div>
             <div class="setting-row">
-              <span class="setting-label">Text width</span>
+              <span class="setting-label">Writing width</span>
               <div class="segmented" data-setting="width">
                 <button data-val="narrow">Narrow</button>
                 <button data-val="medium" class="is-active">Medium</button>
                 <button data-val="wide">Wide</button>
               </div>
+            </div>
+            <div class="setting-row">
+              <span class="setting-label">Typewriter scroll<small>Keep the current line gently centered while you type</small></span>
+              <div class="toggle is-on" data-toggle="typewriterScroll" role="switch" aria-label="Typewriter scroll"></div>
             </div>
           </div>
 
@@ -312,27 +448,23 @@
           </div>
 
           <div class="settings-section">
-            <div class="settings-section-title">Writing</div>
+            <div class="settings-section-title">Writing Flow</div>
             <div class="setting-row">
-              <span class="setting-label">Enter to publish<small>Off (default): use Ctrl/Cmd + Enter to publish, Enter for new line</small></span>
+              <span class="setting-label">Enter publishes<small>Leave this off if Enter should make a new line</small></span>
               <div class="toggle" data-toggle="enterToPublish" role="switch" aria-label="Enter to publish"></div>
             </div>
             <div class="setting-row">
-              <span class="setting-label">Auto-save draft<small>Restore unfinished text on next launch</small></span>
+              <span class="setting-label">Keep unfinished text<small>Restore your draft when you come back</small></span>
               <div class="toggle is-on" data-toggle="autoSaveDraft" role="switch" aria-label="Auto-save draft"></div>
             </div>
             <div class="setting-row">
               <span class="setting-label">Show word count</span>
               <div class="toggle is-on" data-toggle="showWordCount" role="switch" aria-label="Show word count"></div>
             </div>
-            <div class="setting-row">
-              <span class="setting-label">Confirm before delete</span>
-              <div class="toggle" data-toggle="confirmDelete" role="switch" aria-label="Confirm before delete"></div>
-            </div>
           </div>
 
           <div class="settings-section">
-            <div class="settings-section-title">Data</div>
+            <div class="settings-section-title">Library</div>
             <button class="settings-btn" id="exportJsonBtn">Export All as JSON</button>
             <button class="settings-btn" id="exportTxtBtn">Export All as Text</button>
             <button class="settings-btn" id="importBtn">Import JSON</button>
@@ -343,25 +475,47 @@
           <div class="settings-section">
             <div class="settings-section-title">Shortcuts</div>
             <div class="shortcut-list">
-              <div class="shortcut-item"><span>Publish entry</span><kbd id="shortcutPublish">Ctrl + Enter</kbd></div>
-              <div class="shortcut-item"><span>New line</span><kbd>Enter</kbd></div>
-              <div class="shortcut-item"><span>Write tab</span><kbd>Ctrl + 1</kbd></div>
-              <div class="shortcut-item"><span>Library tab</span><kbd>Ctrl + 2</kbd></div>
-              <div class="shortcut-item"><span>Focus mode</span><kbd>Ctrl + 3</kbd></div>
-              <div class="shortcut-item"><span>Insights tab</span><kbd>Ctrl + 4</kbd></div>
-              <div class="shortcut-item"><span>Settings tab</span><kbd>Ctrl + 5</kbd></div>
-              <div class="shortcut-item"><span>Toggle theme</span><kbd>Ctrl + T</kbd></div>
-              <div class="shortcut-item"><span>Focus the page</span><kbd>Ctrl + L</kbd></div>
-              <div class="shortcut-item"><span>Search entries</span><kbd>Ctrl + K</kbd></div>
-              <div class="shortcut-item"><span>Full screen</span><kbd>F11</kbd></div>
+              <div class="shortcut-item"><span>New entry</span><kbd>Ctrl + N</kbd></div>
+              <div class="shortcut-item"><span>Save current entry</span><kbd>Ctrl + S</kbd></div>
+              <div class="shortcut-item"><span>Search library</span><kbd>Ctrl + F</kbd></div>
+              <div class="shortcut-item"><span>Open settings</span><kbd>Ctrl + ,</kbd></div>
+              <div class="shortcut-item"><span>Toggle focus mode</span><kbd>Ctrl + Shift + F</kbd></div>
+              <div class="shortcut-item"><span>Exit focus mode</span><kbd>Esc</kbd></div>
             </div>
           </div>
 
-          <div class="settings-section">
+          <div class="settings-section about-section">
             <div class="settings-section-title">About</div>
-            <p class="about-text">
-              The Quiet Page is a private writing journal. Everything you write is stored only on this device, in your own user data folder — no accounts, no servers, no ads. Arabic flows right-to-left; English flows left-to-right — each line knows its own direction. Version <span id="aboutVersion">—</span>.
-            </p>
+            <div class="about-card">
+              <h2>The Quiet Page</h2>
+              <p>A private offline writing journal for Windows.</p>
+              <span><strong id="aboutVersion">—</strong></span>
+            </div>
+            <div class="privacy-card">
+              <h3>Everything stays on your computer.</h3>
+              <p>The Quiet Page does not connect to the internet. Ever. Your entries are saved only on this device, in a folder you control. There are no accounts, no cloud, no analytics, no telemetry — nothing leaves your machine. Your words are yours alone.</p>
+              <div class="data-path-row">
+                <span>Your data is stored at:</span>
+                <code id="aboutDataPath">Loading…</code>
+                <button class="settings-btn" id="aboutOpenDataBtn" type="button">Open Folder</button>
+              </div>
+            </div>
+            <details class="shortcut-details">
+              <summary>Keyboard shortcuts</summary>
+              <div class="shortcut-list">
+                <div class="shortcut-item"><span>New entry</span><kbd>Ctrl + N</kbd></div>
+                <div class="shortcut-item"><span>Save current entry</span><kbd>Ctrl + S</kbd></div>
+                <div class="shortcut-item"><span>Search library</span><kbd>Ctrl + F</kbd></div>
+                <div class="shortcut-item"><span>Open settings</span><kbd>Ctrl + ,</kbd></div>
+                <div class="shortcut-item"><span>Toggle focus mode</span><kbd>Ctrl + Shift + F</kbd></div>
+                <div class="shortcut-item"><span>Leave focus mode</span><kbd>Esc</kbd></div>
+              </div>
+            </details>
+            <div class="credits-card">
+              <h3>Open-source acknowledgments</h3>
+              <p>Local fonts are bundled under the SIL Open Font License, including Cormorant Garamond, Amiri, Inter, Lora, Merriweather, JetBrains Mono, Nunito, Playfair Display, Tajawal, Lateef, Cairo, and Scheherazade New.</p>
+              <p>Ambient audio files are bundled locally and credited in the included third-party notices.</p>
+            </div>
           </div>
 
         </div>
@@ -370,12 +524,35 @@
     </main>
   </div>
 
+  <div class="entry-edit-overlay" id="entryEditOverlay" hidden role="dialog" aria-modal="true" aria-labelledby="entryEditTitle">
+    <div class="entry-edit-panel">
+      <div class="entry-edit-header">
+        <div>
+          <span class="entry-edit-eyebrow">Saved Entry</span>
+          <h2 class="entry-edit-title" id="entryEditTitle">Edit entry</h2>
+        </div>
+        <button class="entry-edit-close" id="entryEditClose" type="button" aria-label="Close editor">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6l-12 12"/><path d="M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <textarea class="entry-edit-textarea" id="entryEditTextarea" dir="auto"></textarea>
+      <div class="entry-edit-actions">
+        <span class="entry-edit-hint">Ctrl+Enter to save · Esc to cancel</span>
+        <button class="reader-btn" id="entryEditCancel" type="button">Cancel</button>
+        <button class="reader-btn is-primary" id="entryEditSave" type="button">Save changes</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast notifications -->
   <div class="toast-container" id="toastContainer"></div>
+  </div>
 
   <!-- Scripts -->
+  <script src="js/utils.js"></script>
   <script src="js/storage.js"></script>
   <script src="js/sound.js"></script>
+  <script src="js/ambient.js"></script>
   <script src="js/util.js"></script>
   <script src="js/composer.js"></script>
   <script src="js/entries.js"></script>

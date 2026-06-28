@@ -11,8 +11,8 @@ computer. It has no accounts, analytics, advertising, or online service.
 
 Open the repository's **Releases** page and choose one of:
 
-- `The-Quiet-Page-1.1.0-Setup.exe` — normal Windows installer
-- `The-Quiet-Page-1.1.0-Portable.exe` — portable version with no installation
+- `The-Quiet-Page-1.1.3-Setup.exe` — normal Windows installer
+- `The-Quiet-Page-1.1.3-Portable.exe` — portable version with no installation
 
 Windows may show a SmartScreen warning because the community build is not
 code-signed. Verify the SHA-256 checksums published with each release.
@@ -21,7 +21,7 @@ code-signed. Verify the SHA-256 checksums published with each release.
 
 - Arabic right-to-left and English left-to-right writing
 - Local journal library with search, editing, pinning, import, and export
-- Focus mode, writing statistics, themes, typography, and typewriter sounds
+- Focus mode, writing statistics, themes, typography, typewriter sounds, and ambient music moods
 - Offline fonts and no network requests
 - JSON and plain-text backups
 

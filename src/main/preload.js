@@ -28,6 +28,7 @@ contextBridge.exposeInMainWorld('QuietPage', {
   /* ----- App info ----- */
   app: {
     getVersion:     () => ipcRenderer.invoke('app:get-version'),
+    getDataPath:    () => ipcRenderer.invoke('app:get-data-path'),
     openDataFolder: () => ipcRenderer.invoke('app:open-data-folder'),
   },
 
@@ -37,7 +38,7 @@ contextBridge.exposeInMainWorld('QuietPage', {
       const valid = [
         'menu:new-entry', 'menu:publish', 'menu:export-json', 'menu:export-txt',
         'menu:import', 'menu:tab', 'menu:cycle-theme', 'menu:focus-composer',
-        'menu:search', 'menu:about',
+        'menu:search', 'menu:about', 'menu:toggle-focus', 'menu:save-current',
       ];
       if (valid.indexOf(channel) === -1) return;
       const listener = (_evt, ...args) => cb(...args);

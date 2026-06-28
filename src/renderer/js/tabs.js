@@ -25,7 +25,7 @@ window.QuietPageTabs = (function () {
   function switchTo(tab) {
     if (!tab) return;
 
-    if (tab === 'focus' && currentTab === 'write') {
+    if (tab === 'focus' && currentTab !== 'focus') {
       window.QuietPageFocus.setText(window.QuietPageComposer.getText());
     } else if (tab === 'write' && currentTab === 'focus') {
       window.QuietPageComposer.setText(window.QuietPageFocus.getText());
@@ -57,6 +57,8 @@ window.QuietPageTabs = (function () {
     } else if (tab === 'insights') {
       window.QuietPageInsights && window.QuietPageInsights.render();
     }
+
+    document.dispatchEvent(new CustomEvent('quiet:tab-changed', { detail: { tab: tab } }));
   }
 
   function current() { return currentTab; }

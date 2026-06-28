@@ -12,6 +12,7 @@ const { randomUUID } = require('crypto');
 const path = require('path');
 const fs = require('fs');
 const fsp = require('fs/promises');
+const { extractTitleAndBody } = require('../renderer/js/utils');
 
 const isDev = process.argv.includes('--dev');
 const isMac = process.platform === 'darwin';
@@ -109,8 +110,10 @@ function writeText(file, value) {
 /* ---------- Default settings (mirror renderer) ---------- */
 
 const DEFAULT_SETTINGS = {
-  theme: 'sand',
+  theme: 'sage',
   font: 'cormorant',
+  englishFont: 'default',
+  arabicFont: 'default',
   size: 'medium',
   leading: 'normal',
   width: 'medium',
@@ -118,10 +121,14 @@ const DEFAULT_SETTINGS = {
   soundType: 'typewriter',
   volume: 40,
   bellOnPublish: true,
+  uiScale: 100,
+  ambientMood: null,
+  ambientVolume: 40,
+  typewriterScroll: true,
   enterToPublish: false, // Default: Ctrl+Enter publishes, Enter = new line
   autoSaveDraft: true,
   showWordCount: true,
-  confirmDelete: false,
+  confirmDelete: true,
   // Desktop-only:
   windowBounds: null,
   activeTab: 'write',
@@ -153,11 +160,28 @@ function pickEnum(value, allowed, fallback) {
   return allowed.includes(value) ? value : fallback;
 }
 
+function legacyEnglishFont(font) {
+  if (font === 'newsreader') return 'newsreader';
+  if (font === 'spectral') return 'spectral';
+  return 'default';
+}
+
 function normalizeSettings(value) {
   const source = isPlainObject(value) ? value : {};
+  const legacyFont = pickEnum(source.font, ['cormorant', 'newsreader', 'spectral', 'system'], DEFAULT_SETTINGS.font);
   return {
-    theme: pickEnum(source.theme, ['sand', 'ivory', 'parchment', 'slate', 'midnight', 'forest'], DEFAULT_SETTINGS.theme),
-    font: pickEnum(source.font, ['cormorant', 'newsreader', 'spectral', 'system'], DEFAULT_SETTINGS.font),
+    theme: pickEnum(source.theme, ['sage', 'old-paper', 'typewriter', 'candlelight', 'moonlight', 'dusk', 'slate', 'midnight', 'forest', 'ember', 'rose', 'obsidian', 'steel', 'aurora', 'cave', 'noir'], DEFAULT_SETTINGS.theme),
+    font: legacyFont,
+    englishFont: pickEnum(
+      source.englishFont,
+      ['default', 'newsreader', 'spectral', 'lora', 'merriweather', 'jetbrains-mono', 'nunito', 'playfair-display'],
+      legacyEnglishFont(legacyFont)
+    ),
+    arabicFont: pickEnum(
+      source.arabicFont,
+      ['default', 'tajawal', 'lateef', 'cairo', 'scheherazade-new'],
+      DEFAULT_SETTINGS.arabicFont
+    ),
     size: pickEnum(source.size, ['small', 'medium', 'large', 'xlarge'], DEFAULT_SETTINGS.size),
     leading: pickEnum(source.leading, ['compact', 'normal', 'relaxed'], DEFAULT_SETTINGS.leading),
     width: pickEnum(source.width, ['narrow', 'medium', 'wide'], DEFAULT_SETTINGS.width),
@@ -167,6 +191,12 @@ function normalizeSettings(value) {
       ? Math.min(100, Math.max(0, Math.round(Number(source.volume))))
       : DEFAULT_SETTINGS.volume,
     bellOnPublish: typeof source.bellOnPublish === 'boolean' ? source.bellOnPublish : DEFAULT_SETTINGS.bellOnPublish,
+    uiScale: pickEnum(Number(source.uiScale), [85, 90, 100, 110, 115], DEFAULT_SETTINGS.uiScale),
+    ambientMood: pickEnum(source.ambientMood, ['rain', 'forest', 'cafe', 'lofi', 'fireplace', 'ocean', 'thunder', 'birds', 'river', 'wind', 'train', 'night', 'white-noise'], DEFAULT_SETTINGS.ambientMood),
+    ambientVolume: Number.isFinite(Number(source.ambientVolume))
+      ? Math.min(100, Math.max(0, Math.round(Number(source.ambientVolume))))
+      : DEFAULT_SETTINGS.ambientVolume,
+    typewriterScroll: typeof source.typewriterScroll === 'boolean' ? source.typewriterScroll : DEFAULT_SETTINGS.typewriterScroll,
     enterToPublish: typeof source.enterToPublish === 'boolean' ? source.enterToPublish : DEFAULT_SETTINGS.enterToPublish,
     autoSaveDraft: typeof source.autoSaveDraft === 'boolean' ? source.autoSaveDraft : DEFAULT_SETTINGS.autoSaveDraft,
     showWordCount: typeof source.showWordCount === 'boolean' ? source.showWordCount : DEFAULT_SETTINGS.showWordCount,
@@ -181,6 +211,40 @@ function createEntryId() {
   return `e_${Date.now()}_${randomUUID().replace(/-/g, '').slice(0, 12)}`;
 }
 
+function countWords(text) {
+  return text && text.trim() ? text.trim().split(/\s+/).length : 0;
+}
+
+function sanitizeTag(value) {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9\u0600-\u06FF-]/g, '')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+    .slice(0, 32);
+}
+
+function normalizeTags(value) {
+  if (!Array.isArray(value)) return [];
+  const seen = new Set();
+  const tags = [];
+  for (const raw of value) {
+    const tag = sanitizeTag(raw);
+    if (!tag || seen.has(tag)) continue;
+    seen.add(tag);
+    tags.push(tag);
+    if (tags.length >= 12) break;
+  }
+  return tags;
+}
+
+function normalizeFolder(value) {
+  const folder = String(value || '').trim().replace(/\s+/g, ' ').slice(0, 48);
+  return folder || 'Uncategorized';
+}
+
 function normalizeEntries(value) {
   if (!Array.isArray(value)) return [];
 
@@ -188,10 +252,14 @@ function normalizeEntries(value) {
   const entries = [];
 
   for (const candidate of value.slice(0, MAX_ENTRIES)) {
-    if (!isPlainObject(candidate) || typeof candidate.text !== 'string') continue;
+    if (!isPlainObject(candidate)) continue;
 
-    const text = candidate.text.slice(0, MAX_ENTRY_TEXT_LENGTH);
+    const sourceText = typeof candidate.text === 'string'
+      ? candidate.text
+      : (typeof candidate.content === 'string' ? candidate.content : '');
+    const text = sourceText.slice(0, MAX_ENTRY_TEXT_LENGTH);
     if (!text.trim()) continue;
+    const { title, body } = extractTitleAndBody(text);
 
     const createdTime = Date.parse(candidate.createdAt);
     const updatedTime = Date.parse(candidate.updatedAt);
@@ -205,11 +273,20 @@ function normalizeEntries(value) {
     const entry = {
       id,
       text,
+      title,
+      body,
       createdAt: Number.isFinite(createdTime)
         ? new Date(createdTime).toISOString()
         : new Date().toISOString(),
       pinned: candidate.pinned === true,
+      wordCount: countWords(text),
+      tags: normalizeTags(candidate.tags),
+      folder: normalizeFolder(candidate.folder),
     };
+
+    if (typeof candidate.html === 'string' && candidate.html.trim()) {
+      entry.html = candidate.html.slice(0, MAX_ENTRY_TEXT_LENGTH * 2);
+    }
 
     if (Number.isFinite(updatedTime)) {
       entry.updatedAt = new Date(updatedTime).toISOString();
@@ -291,6 +368,45 @@ function createWindow() {
   mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   mainWindow.webContents.on('will-navigate', (event) => event.preventDefault());
   mainWindow.webContents.on('will-attach-webview', (event) => event.preventDefault());
+  mainWindow.webContents.on('before-input-event', (event, input) => {
+    if (input.type !== 'keyDown') return;
+    const ctrl = input.control || input.meta;
+    const key = String(input.key || '').toLowerCase();
+
+    if (key === 'f11') {
+      event.preventDefault();
+      mainWindow.setFullScreen(!mainWindow.isFullScreen());
+      return;
+    }
+
+    if (!ctrl) return;
+
+    if (key === 'n') {
+      event.preventDefault();
+      mainWindow.webContents.send('menu:new-entry');
+    } else if (key === 's') {
+      event.preventDefault();
+      mainWindow.webContents.send('menu:save-current');
+    } else if (key === 'f' && input.shift) {
+      event.preventDefault();
+      mainWindow.webContents.send('menu:toggle-focus');
+    } else if (key === 'f') {
+      event.preventDefault();
+      mainWindow.webContents.send('menu:search');
+    } else if (key === 'l') {
+      event.preventDefault();
+      mainWindow.webContents.send('menu:tab', 'library');
+    } else if (key === ',') {
+      event.preventDefault();
+      mainWindow.webContents.send('menu:tab', 'settings');
+    } else if (key === 'e') {
+      event.preventDefault();
+      mainWindow.webContents.send('menu:export-json');
+    } else if (key === 't') {
+      event.preventDefault();
+      mainWindow.webContents.send('menu:cycle-theme');
+    }
+  });
 
   mainWindow.loadFile(path.join(__dirname, '..', 'renderer', 'index.html'));
 
@@ -301,14 +417,13 @@ function createWindow() {
 
 function getThemeBackground(theme) {
   const map = {
-    sand: '#EAE4D9',
-    ivory: '#F5F3EE',
-    parchment: '#E8DFC9',
-    slate: '#1E2329',
-    midnight: '#141218',
-    forest: '#182018',
+    sage: '#172019', 'old-paper': '#f5e6c8', typewriter: '#fafaf8',
+    candlelight: '#1a1208', moonlight: '#0d1117', dusk: '#1e1a2e',
+    slate: '#1E2329', midnight: '#141218', forest: '#182018', ember: '#1A0F08',
+    rose: '#D4C2C0', obsidian: '#000000', steel: '#3A444E',
+    aurora: '#0A0E1F', cave: '#1C1410', noir: '#1A1A18',
   };
-  return map[theme] || map.sand;
+  return map[theme] || map.sage;
 }
 
 function readSettingsSync() {
@@ -574,6 +689,7 @@ function registerIPC() {
 
   // ----- Misc -----
   ipcMain.handle('app:get-version', () => app.getVersion());
+  ipcMain.handle('app:get-data-path', () => app.getPath('userData'));
   ipcMain.handle('app:open-data-folder', () => shell.openPath(app.getPath('userData')));
 }
 

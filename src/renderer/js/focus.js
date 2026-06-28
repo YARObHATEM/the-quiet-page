@@ -6,13 +6,18 @@ window.QuietPageFocus = (function () {
   'use strict';
 
   var textarea = null;
+  var stage = null;
+  var backBtn = null;
   var dateEl = null;
   var counterEl = null;
   var draftTimer = null;
+  var hintTimer = null;
   var hasUserInput = false;
 
   function init() {
     textarea = document.getElementById('focusTextarea');
+    stage = textarea ? textarea.closest('.focus-stage') : null;
+    backBtn = document.getElementById('focusBackBtn');
     dateEl = document.getElementById('focusDate');
     counterEl = document.getElementById('focusCounter');
 
@@ -32,6 +37,9 @@ window.QuietPageFocus = (function () {
 
     textarea.addEventListener('input', onInput);
     textarea.addEventListener('keydown', onKeyDown);
+    if (backBtn) backBtn.addEventListener('click', exitFocus);
+    document.addEventListener('mousemove', showExitHint);
+    updateDirection();
   }
 
   function onInput(e) {
@@ -43,6 +51,7 @@ window.QuietPageFocus = (function () {
     } else if (e.inputType === 'deleteContentBackward') {
       window.QuietPageSound.playKey('Backspace');
     }
+    updateDirection();
     updateCounter();
     scheduleDraftSave();
   }
@@ -51,7 +60,7 @@ window.QuietPageFocus = (function () {
     // Esc → back to Write tab
     if (e.key === 'Escape') {
       e.preventDefault();
-      document.dispatchEvent(new CustomEvent('quiet:switch-tab', { detail: { tab: 'write' } }));
+      exitFocus();
       return;
     }
     // Ctrl/Cmd+Enter → publish
@@ -89,6 +98,7 @@ window.QuietPageFocus = (function () {
     textarea.value = '';
     QuietPageStorage.saveDraft('');
     updateCounter();
+    updateDirection();
 
     window.QuietPageSound.playBell();
     document.dispatchEvent(new CustomEvent('quiet:entries-changed', { detail: { action: 'publish', entry: entry } }));
@@ -105,8 +115,13 @@ window.QuietPageFocus = (function () {
     if (!window.QuietPageStorage.getSettings().autoSaveDraft) return;
     clearTimeout(draftTimer);
     draftTimer = setTimeout(function () {
-      window.QuietPageStorage.saveDraft(textarea.value);
+      forceSaveDraft();
     }, 1000);
+  }
+
+  function forceSaveDraft() {
+    clearTimeout(draftTimer);
+    return window.QuietPageStorage.saveDraft(textarea ? textarea.value : '');
   }
 
   function focus() {
@@ -115,6 +130,7 @@ window.QuietPageFocus = (function () {
       // Move cursor to end
       var len = textarea.value.length;
       textarea.setSelectionRange(len, len);
+      showExitHint();
     }
   }
 
@@ -126,6 +142,27 @@ window.QuietPageFocus = (function () {
     if (!textarea) return;
     textarea.value = typeof text === 'string' ? text : '';
     updateCounter();
+    updateDirection();
+  }
+
+  function updateDirection() {
+    if (!textarea) return;
+    var dir = QuietPageUtil.detectDirection(textarea.value);
+    textarea.dir = dir;
+    textarea.dataset.direction = dir;
+  }
+
+  function showExitHint() {
+    if (!stage) return;
+    stage.classList.add('show-focus-hint');
+    clearTimeout(hintTimer);
+    hintTimer = setTimeout(function () {
+      stage.classList.remove('show-focus-hint');
+    }, 3000);
+  }
+
+  function exitFocus() {
+    document.dispatchEvent(new CustomEvent('quiet:switch-tab', { detail: { tab: 'write' } }));
   }
 
   return {
@@ -133,5 +170,6 @@ window.QuietPageFocus = (function () {
     focus: focus,
     getText: getText,
     setText: setText,
+    forceSaveDraft: forceSaveDraft,
   };
 })();

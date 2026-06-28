@@ -13,6 +13,13 @@ window.QuietPageInsights = (function () {
     var entries = QuietPageStorage.getEntries();
     var totalWords = 0;
     var totalEntries = entries.length;
+    var emptyEl = document.getElementById('insightsEmpty');
+    if (emptyEl) {
+      emptyEl.hidden = totalEntries > 0;
+      if (!totalEntries) {
+        emptyEl.innerHTML = QuietPageUtil.emptyStateHtml('chart', 'Write something first, then come back here.');
+      }
+    }
     for (var i = 0; i < entries.length; i++) {
       totalWords += QuietPageUtil.countWords(entries[i].text);
     }

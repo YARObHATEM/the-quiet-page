@@ -39,6 +39,10 @@ window.QuietPageSound = (function () {
     }
   }
 
+  function getContext() {
+    return ensureContext() ? ctx : null;
+  }
+
   function getNoise() {
     if (noiseBuffer) return noiseBuffer;
     var sr = ctx.sampleRate;
@@ -202,6 +206,7 @@ window.QuietPageSound = (function () {
     init: init,
     updateSettings: updateSettings,
     ensureContext: ensureContext,
+    getContext: getContext,
     resume: resume,
     playKey: playKey,
     playType: playType,

@@ -1,8 +1,8 @@
 {
   "name": "the-quiet-page",
   "productName": "The Quiet Page",
-  "version": "1.1.0",
-  "description": "A private, offline desktop writing journal for Arabic and English.",
+  "version": "1.2.0",
+  "description": "A private offline writing journal for Windows",
   "main": "src/main/main.js",
   "author": "The Quiet Page contributors",
   "license": "MIT",
@@ -30,13 +30,13 @@
     "electron-builder": "26.15.3"
   },
   "build": {
-    "appId": "com.thequietpage.app",
+    "appId": "com.quietpage.app",
     "productName": "The Quiet Page",
     "asar": true,
     "compression": "maximum",
     "directories": {
       "buildResources": "build",
-      "output": "release"
+      "output": "dist"
     },
     "files": [
       "src/**/*",
@@ -64,7 +64,7 @@
       ]
     },
     "nsis": {
-      "artifactName": "The-Quiet-Page-${version}-Setup.${ext}",
+      "artifactName": "TheQuietPage-${version}-Setup.${ext}",
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
@@ -73,7 +73,7 @@
       "deleteAppDataOnUninstall": false
     },
     "portable": {
-      "artifactName": "The-Quiet-Page-${version}-Portable.${ext}"
+      "artifactName": "TheQuietPage-${version}-Portable.${ext}"
     }
   }
 }
