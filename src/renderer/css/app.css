@@ -575,6 +575,11 @@ body * { font-family: inherit !important; }
   padding: 0 3rem 3rem;
   max-width: 100%;
 }
+.tab-panel[data-tab="library"].is-active {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
 .tab-panel.is-active {
   display: block;
   animation: fadeInTab 400ms cubic-bezier(.22,1,.36,1);
@@ -1251,8 +1256,10 @@ body * { font-family: inherit !important; }
 .library-layout {
   display: grid;
   grid-template-columns: 320px 1fr;
+  grid-template-rows: 1fr;
   gap: 0;
-  height: calc(var(--scaled-viewport-height) - 130px);
+  flex: 1;
+  min-height: 0;
   margin-top: 1.5rem;
   background: var(--surface);
   border: 1px solid var(--rule);
@@ -1263,6 +1270,7 @@ body * { font-family: inherit !important; }
   border-right: 1px solid var(--rule);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   background: var(--surface-2);
 }
 .library-search-wrap {
@@ -1617,6 +1625,7 @@ body * { font-family: inherit !important; }
 .library-reader {
   position: relative;
   overflow-y: auto;
+  padding-bottom: 4rem;
   background: var(--bg);
 }
 .reader-empty {
