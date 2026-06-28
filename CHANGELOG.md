@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.2.1
+
+- Removed tags feature for a cleaner writing experience.
+- Reader content now fills full width instead of the 760px constraint.
+- Removed preview text from library cards; increased folder, meta, and label
+  font sizes for better readability.
+- Centered the sidebar brand title and removed the trailing period.
+- Fixed composer placeholder alignment — now matches the cursor position
+  using dynamic padding inheritance instead of hardcoded pixel values.
+- Normalized forest ambient audio volume to match other moods.
+- Various UI spacing improvements.
+
 ## 1.1.3
 
 - Added Rain, Forest, Café, Lo-fi, and Deep Space ambient writing moods.

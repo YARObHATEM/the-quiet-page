@@ -1,8 +1,8 @@
 {
   "name": "the-quiet-page",
   "productName": "The Quiet Page",
-  "version": "1.2.0",
-  "description": "A private offline writing journal for Windows",
+  "version": "1.2.1",
+  "description": "A private offline writing journal for Arabic and English. No accounts, no cloud, no distractions.",
   "main": "src/main/main.js",
   "author": "The Quiet Page contributors",
   "license": "MIT",
