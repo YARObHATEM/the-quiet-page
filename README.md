@@ -1,31 +1,50 @@
 # The Quiet Page
 
-A calm, private desktop writing space for Arabic and English.
+A private offline writing journal for Windows, made for Arabic and English.
 
-The Quiet Page stores entries, settings, and unfinished drafts on your own
-computer. It has no accounts, analytics, advertising, or online service.
+The Quiet Page is a calm desktop space for drafting, journaling, and keeping
+personal notes without accounts, cloud sync, ads, analytics, or background
+network requests. Your writing, drafts, settings, and backups stay on your own
+computer.
 
 ![The Quiet Page writing screen](docs/screenshot.png)
 
 ## Download
 
-Open the repository's **Releases** page and choose one of:
+Latest release: [v1.2.1](https://github.com/YARObHATEM/the-quiet-page/releases/tag/v1.2.1)
 
-- `The-Quiet-Page-1.1.3-Setup.exe` — normal Windows installer
-- `The-Quiet-Page-1.1.3-Portable.exe` — portable version with no installation
+- [TheQuietPage-1.2.1-Setup.exe](https://github.com/YARObHATEM/the-quiet-page/releases/download/v1.2.1/TheQuietPage-1.2.1-Setup.exe) - normal Windows installer
+- [TheQuietPage-1.2.1-Portable.exe](https://github.com/YARObHATEM/the-quiet-page/releases/download/v1.2.1/TheQuietPage-1.2.1-Portable.exe) - portable version with no installation
 
-Windows may show a SmartScreen warning because the community build is not
-code-signed. Verify the SHA-256 checksums published with each release.
+Windows may show a SmartScreen warning because this community build is not
+code-signed. The release page includes SHA-256 digests for checking the files.
+
+## What's New in 1.2.1
+
+- Cleaner writing flow with the tags feature removed.
+- Full-width library reader for more comfortable long-form reading.
+- Cleaner library cards with larger folders, metadata, and labels.
+- Sidebar title polish: centered brand name, no trailing period.
+- Composer placeholder alignment now follows the real cursor position.
+- Forest ambience volume now matches the other ambient moods.
+- Library scrolling is fixed so the list and reader move independently.
 
 ## Features
 
-- Arabic right-to-left and English left-to-right writing
-- Local journal library with search, editing, pinning, import, and export
-- Focus mode, writing statistics, themes, typography, typewriter sounds, and ambient music moods
-- Offline fonts and no network requests
-- JSON and plain-text backups
+- Arabic right-to-left and English left-to-right writing.
+- Local journal library with search, folders, editing, pinning, copy, import,
+  and export.
+- Rich writing composer with headings, bold, italic, underline, draft restore,
+  and Ctrl+Enter publishing.
+- Focus mode, writing statistics, day streaks, themes, typography controls,
+  typewriter sounds, and ambient writing moods.
+- Bundled offline Arabic and English fonts.
+- JSON and plain-text backups.
+- No accounts, telemetry, cloud service, or network dependency.
 
-## Where data is stored
+## Privacy
+
+Everything stays on your computer.
 
 On Windows, journal data is stored under:
 
@@ -34,7 +53,7 @@ On Windows, journal data is stored under:
 ```
 
 Uninstalling the app does not delete your writing. Back up entries from
-**Settings → Export All as JSON**.
+**Settings > Export All as JSON**.
 
 See [PRIVACY.md](PRIVACY.md) for the full privacy summary.
 
@@ -53,9 +72,10 @@ Create the Windows installer and portable executable:
 npm run dist
 ```
 
-Artifacts are written to `release/`.
+Artifacts are written to `dist/`.
 
 ## License
 
 The application source is released under the [MIT License](LICENSE). Bundled
-fonts have their own SIL Open Font License files under `licenses/fonts/`.
+fonts and ambient audio have their own notices under `licenses/` and
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
